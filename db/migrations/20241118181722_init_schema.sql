@@ -2,27 +2,22 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS projects(
     id UUID NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    owner_id UUID NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS teams(
-    id UUID NOT NULL PRIMARY KEY,
-    name VARCHAR(255),
-    project_id UUID UNIQUE,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS users_in_teams(
+CREATE TABLE IF NOT EXISTS users_in_projects(
     user_id UUID NOT NULL,
-    team_id UUID NOT NULL,
-    CONSTRAINT users_in_team_pkey PRIMARY KEY (user_id, team_id)
+    project_id UUID NOT NULL,
+    CONSTRAINT users_in_projects_pkey PRIMARY KEY (user_id, project_id), 
+    FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS columns(
+CREATE TABLE IF NOT EXISTS project_columns(
     id UUID NOT NULL PRIMARY KEY,
     name VARCHAR(255),
     project_id UUID NOT NULL,
-    FOREIGN KEY(project_id) REFERENCES projects(id)
+    FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tasks(
@@ -32,8 +27,8 @@ CREATE TABLE IF NOT EXISTS tasks(
     project_id UUID NOT NULL,
     executor_id UUID,
     column_id UUID,
-    FOREIGN KEY(column_id) REFERENCES columns(id),
-    FOREIGN KEY(project_id) REFERENCES projects(id)
+    FOREIGN KEY(column_id) REFERENCES project_columns(id),
+    FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
 
@@ -42,8 +37,7 @@ CREATE TABLE IF NOT EXISTS tasks(
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS tasks;
-DROP TABLE IF EXISTS columns;
-DROP TABLE IF EXISTS users_in_teams;
-DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS project_columns;
+DROP TABLE IF EXISTS users_in_projects;
 DROP TABLE IF EXISTS projects;
 -- +goose StatementEnd
