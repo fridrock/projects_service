@@ -10,7 +10,6 @@ type ProjectStorage interface {
 	CreateProject(api.Project) (api.Project, error)
 	GetProjects(userId uuid.UUID) ([]api.Project, error)
 	DeleteProject(projectId uuid.UUID) error
-	GetProject(userId uuid.UUID, projectId uuid.UUID) (api.Project, error)
 }
 
 type ProjectStorageImpl struct {
