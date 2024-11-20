@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/fridrock/projects_service/columns"
 	"github.com/fridrock/projects_service/db/core"
 	"github.com/fridrock/projects_service/project"
 	"github.com/fridrock/projects_service/tasks"
@@ -27,6 +28,8 @@ type App struct {
 	teamHandler    team.TeamHandler
 	taskStorage    tasks.TaskStorage
 	taskHandler    tasks.TaskHandler
+	columnStorage  columns.ColumnStorage
+	columnHandler  columns.ColumnHandler
 	authManager    utils.AuthManager
 }
 
@@ -43,6 +46,8 @@ func (a App) setup() {
 	a.teamHandler = team.NewTeamHandler(a.teamStorage)
 	a.taskStorage = tasks.NewTaskStorage(a.db)
 	a.taskHandler = tasks.NewTaskHandler(a.taskStorage)
+	a.columnStorage = columns.NewColumnStorage(a.db)
+	a.columnHandler = columns.NewColumnHandler(a.columnStorage)
 	a.authManager = utils.NewAuthManager()
 	a.setupServer()
 }
@@ -64,9 +69,14 @@ func (a App) getRouter() http.Handler {
 	mainRouter.Handle("/projects/{id}", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.projectHandler.DeleteProject))).Methods("DELETE")
 	mainRouter.Handle("/team/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.teamHandler.AddToProject))).Methods("POST")
 	mainRouter.Handle("/team/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.teamHandler.RemoveFromProject))).Methods("DELETE")
+	mainRouter.Handle("/team/profiles/{projectId}", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.teamHandler.GetProfiles))).Methods("GET")
 	mainRouter.Handle("/task/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.GetProjectTasks))).Methods("GET")
 	mainRouter.Handle("/task/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.AddToBacklog))).Methods("POST")
-	mainRouter.Handle("/task/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.SetExecutor))).Methods("PATCH")
+	mainRouter.Handle("/task/executor", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.SetExecutor))).Methods("PATCH")
+	mainRouter.Handle("/task/column", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.SetColumn))).Methods("PATCH")
 	mainRouter.Handle("/task/{id}", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.taskHandler.DeleteTask))).Methods("DELETE")
+	mainRouter.Handle("/column/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.columnHandler.GetColumnByProject))).Methods("GET")
+	mainRouter.Handle("/column/", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.columnHandler.AddToProject))).Methods("POST")
+	mainRouter.Handle("/column/{id}", utils.HandleErrorMiddleware(a.authManager.HandleWithAuth(a.columnHandler.RemoveFromProject))).Methods("DELETE")
 	return mainRouter
 }

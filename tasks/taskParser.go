@@ -15,6 +15,11 @@ type SetExecutorDto struct {
 	ExecutorId uuid.UUID `json:"executorId" validate:"required"`
 	TaskId     uuid.UUID `json:"taskId" validate:"required"`
 }
+type SetColumnDto struct {
+	ColumnId uuid.UUID `json:"columnId" validate:"required"`
+	TaskId   uuid.UUID `json:"taskId" validate:"required"`
+}
+
 type ProjectTasksDto struct {
 	ProjectId uuid.UUID `json:"projectId" validate:"required"`
 }
@@ -22,6 +27,7 @@ type ProjectTasksDto struct {
 type TaskParser interface {
 	GetTask(r *http.Request) (api.Task, error)
 	GetExecutorDto(r *http.Request) (SetExecutorDto, error)
+	GetColumnDto(r *http.Request) (SetColumnDto, error)
 	GetDeleteTask(r *http.Request) (taskId uuid.UUID, err error)
 	GetProjectTasksDto(r *http.Request) (ProjectTasksDto, error)
 }
@@ -39,6 +45,12 @@ func (tp *TaskParserImpl) GetTask(r *http.Request) (api.Task, error) {
 
 func (tp *TaskParserImpl) GetExecutorDto(r *http.Request) (SetExecutorDto, error) {
 	var dto SetExecutorDto
+	err := json.NewDecoder(r.Body).Decode(&dto)
+	err = errors.Join(err, tp.validate.Struct(dto))
+	return dto, err
+}
+func (tp *TaskParserImpl) GetColumnDto(r *http.Request) (SetColumnDto, error) {
+	var dto SetColumnDto
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	err = errors.Join(err, tp.validate.Struct(dto))
 	return dto, err

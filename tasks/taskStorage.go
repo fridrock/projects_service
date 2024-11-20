@@ -12,6 +12,7 @@ type TaskStorage interface {
 	AddToBacklog(api.Task) (api.Task, error)
 	DeleteTask(uuid.UUID) error
 	SetExecutor(executorId uuid.UUID, taskId uuid.UUID) error
+	SetColumn(columnId uuid.UUID, taskId uuid.UUID) error
 	GetProjectTasks(uuid.UUID) ([]api.Task, error)
 }
 type TaskStorageImpl struct {
@@ -42,6 +43,13 @@ func (ts *TaskStorageImpl) SetExecutor(executorId uuid.UUID, taskId uuid.UUID) e
 	_, err := ts.db.Exec(q, executorId, taskId)
 	return err
 }
+
+func (ts *TaskStorageImpl) SetColumn(columnId uuid.UUID, taskId uuid.UUID) error {
+	q := `UPDATE tasks SET column_id = $1 WHERE id = $2`
+	_, err := ts.db.Exec(q, columnId, taskId)
+	return err
+}
+
 func (ts *TaskStorageImpl) GetProjectTasks(projectId uuid.UUID) ([]api.Task, error) {
 	var tasks []api.Task
 	q := `SELECT * FROM tasks WHERE project_id = $1`

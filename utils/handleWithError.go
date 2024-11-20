@@ -19,7 +19,7 @@ func HandleErrorMiddleware(h HandlerWithError) http.Handler {
 		status, err := h(w, r)
 		if err != nil {
 			w.WriteHeader(status)
-			slog.Debug(err.Error())
+			slog.Error(err.Error())
 			errMsg, err := json.MarshalIndent(ErrorResponse{
 				Status:  status,
 				Message: err.Error(),

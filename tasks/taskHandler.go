@@ -8,6 +8,7 @@ import (
 type TaskHandler interface {
 	AddToBacklog(w http.ResponseWriter, r *http.Request) (int, error)
 	SetExecutor(w http.ResponseWriter, r *http.Request) (int, error)
+	SetColumn(w http.ResponseWriter, r *http.Request) (int, error)
 	DeleteTask(w http.ResponseWriter, r *http.Request) (int, error)
 	GetProjectTasks(w http.ResponseWriter, r *http.Request) (int, error)
 }
@@ -36,11 +37,23 @@ func (th *TaskHandlerImpl) AddToBacklog(w http.ResponseWriter, r *http.Request) 
 }
 
 func (th *TaskHandlerImpl) SetExecutor(w http.ResponseWriter, r *http.Request) (int, error) {
-	executorDto, err := th.parser.GetExecutorDto(r)
+	columnDto, err := th.parser.GetExecutorDto(r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
-	err = th.storage.SetExecutor(executorDto.ExecutorId, executorDto.TaskId)
+	err = th.storage.SetExecutor(columnDto.ExecutorId, columnDto.TaskId)
+	if err != nil {
+		return http.StatusNotFound, err
+	}
+	return http.StatusOK, nil
+}
+
+func (th *TaskHandlerImpl) SetColumn(w http.ResponseWriter, r *http.Request) (int, error) {
+	columnDto, err := th.parser.GetColumnDto(r)
+	if err != nil {
+		return http.StatusBadRequest, err
+	}
+	err = th.storage.SetColumn(columnDto.ColumnId, columnDto.TaskId)
 	if err != nil {
 		return http.StatusNotFound, err
 	}
