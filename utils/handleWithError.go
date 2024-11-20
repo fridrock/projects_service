@@ -16,6 +16,7 @@ type HandlerWithError func(w http.ResponseWriter, r *http.Request) (status int, 
 
 func HandleErrorMiddleware(h HandlerWithError) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		status, err := h(w, r)
 		if err != nil {
 			w.WriteHeader(status)

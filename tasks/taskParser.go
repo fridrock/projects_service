@@ -20,16 +20,12 @@ type SetColumnDto struct {
 	TaskId   uuid.UUID `json:"taskId" validate:"required"`
 }
 
-type ProjectTasksDto struct {
-	ProjectId uuid.UUID `json:"projectId" validate:"required"`
-}
-
 type TaskParser interface {
 	GetTask(r *http.Request) (api.Task, error)
 	GetExecutorDto(r *http.Request) (SetExecutorDto, error)
 	GetColumnDto(r *http.Request) (SetColumnDto, error)
 	GetDeleteTask(r *http.Request) (taskId uuid.UUID, err error)
-	GetProjectTasksDto(r *http.Request) (ProjectTasksDto, error)
+	GetProjectTasksDto(r *http.Request) (uuid.UUID, error)
 }
 
 type TaskParserImpl struct {
@@ -61,11 +57,10 @@ func (tp *TaskParserImpl) GetDeleteTask(r *http.Request) (uuid.UUID, error) {
 	taskId, err := uuid.Parse(vars["id"])
 	return taskId, err
 }
-func (tp *TaskParserImpl) GetProjectTasksDto(r *http.Request) (ProjectTasksDto, error) {
-	var dto ProjectTasksDto
-	err := json.NewDecoder(r.Body).Decode(&dto)
-	err = errors.Join(err, tp.validate.Struct(dto))
-	return dto, err
+func (tp *TaskParserImpl) GetProjectTasksDto(r *http.Request) (uuid.UUID, error) {
+	vars := mux.Vars(r)
+	projectId, err := uuid.Parse(vars["projectId"])
+	return projectId, err
 }
 
 func newTaskParser() TaskParser {

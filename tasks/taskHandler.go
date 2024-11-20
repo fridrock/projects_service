@@ -72,11 +72,11 @@ func (th *TaskHandlerImpl) DeleteTask(w http.ResponseWriter, r *http.Request) (i
 	return http.StatusOK, nil
 }
 func (th *TaskHandlerImpl) GetProjectTasks(w http.ResponseWriter, r *http.Request) (int, error) {
-	dto, err := th.parser.GetProjectTasksDto(r)
+	projectId, err := th.parser.GetProjectTasksDto(r)
 	if err != nil {
 		return http.StatusBadRequest, err
 	}
-	tasks, err := th.storage.GetProjectTasks(dto.ProjectId)
+	tasks, err := th.storage.GetProjectTasks(projectId)
 	if err != nil {
 		return http.StatusNotFound, err
 	}
