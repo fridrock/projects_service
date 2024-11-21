@@ -27,8 +27,8 @@ func (ts *TaskStorageImpl) AddToBacklog(task api.Task) (api.Task, error) {
 		slog.Debug(err.Error())
 	}
 	lastNum += 1
-	q := `INSERT INTO tasks(id, num, description, project_id) VALUES($1, $2, $3, $4) RETURNING id`
-	err = ts.db.QueryRow(q, uuid.New(), lastNum, task.Description, task.ProjectId).Scan(&task.Id)
+	q := `INSERT INTO tasks(id, num, name,  description, project_id) VALUES($1, $2, $3, $4, $5) RETURNING id`
+	err = ts.db.QueryRow(q, uuid.New(), lastNum, task.Name, task.Description, task.ProjectId).Scan(&task.Id)
 	task.Num = lastNum
 	return task, err
 }

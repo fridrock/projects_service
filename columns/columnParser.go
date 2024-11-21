@@ -42,9 +42,9 @@ func (cp *ColumnParserImpl) GetDeleteColumnId(r *http.Request) (uuid.UUID, error
 }
 
 func (cp *ColumnParserImpl) GetColumnByProject(r *http.Request) (uuid.UUID, error) {
-	var dto ColumnByProjectDto
-	err := json.NewDecoder(r.Body).Decode(&dto)
-	return dto.ProjectId, errors.Join(err, cp.validate.Struct(dto))
+	vars := mux.Vars(r)
+	projectId, err := uuid.Parse(vars["projectId"])
+	return projectId, err
 }
 
 func newTeamParser() ColumnParser {

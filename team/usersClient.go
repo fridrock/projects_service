@@ -27,7 +27,7 @@ func (uc *UsersClientImpl) GetProfilesByIds(dto api.ProfilesByUserIdsDto) ([]api
 			param += ","
 		}
 	}
-	fullURL := uc.remoteAddress + "/users/profiles?" + param
+	fullURL := uc.remoteAddress + "/profiles?" + param
 	response, err := http.Get(fullURL)
 	if err != nil {
 		return profiles, err
@@ -39,7 +39,6 @@ func (uc *UsersClientImpl) GetProfilesByIds(dto api.ProfilesByUserIdsDto) ([]api
 	if err != nil {
 		return profiles, err
 	}
-
 	// Парсинг JSON-ответа в список DTO
 	err = json.Unmarshal(body, &profiles)
 	if err != nil {

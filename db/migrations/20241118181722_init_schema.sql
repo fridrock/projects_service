@@ -23,11 +23,12 @@ CREATE TABLE IF NOT EXISTS project_columns(
 CREATE TABLE IF NOT EXISTS tasks(
     id UUID NOT NULL PRIMARY KEY,
     num INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
     description VARCHAR(1000) NOT NULL,
     project_id UUID NOT NULL,
     executor_id UUID DEFAULT NULL,
-    column_id UUID DEFAULT NULL ON DELETE SET NULL,
-    FOREIGN KEY(column_id) REFERENCES project_columns(id),
+    column_id UUID DEFAULT NULL,
+    FOREIGN KEY(column_id) REFERENCES project_columns(id) ON DELETE SET NULL,
     FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 

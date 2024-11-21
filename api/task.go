@@ -5,6 +5,7 @@ import "github.com/google/uuid"
 type Task struct {
 	Id          uuid.UUID `json:"id" db:"id"`
 	Num         int       `json:"num" db:"num"`
+	Name        string    `json:"name" db:"name" validate:"required"`
 	Description string    `json:"description" db:"description" validate:"required"`
 	ProjectId   uuid.UUID `json:"projectId" db:"project_id" validate:"required"`
 	ExecutorId  uuid.UUID `json:"executorId" db:"executor_id"`
